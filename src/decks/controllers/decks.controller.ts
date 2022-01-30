@@ -1,14 +1,17 @@
-import { Body, Controller, Get, HttpCode, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { DeckCreatePayload } from '../models/deck.model';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { DeckCreatePayload, DeckGetAllPayload } from '../models/deck.model';
 import { DeckService } from '../services/deck.service';
 
+@ApiTags('decks')
 @Controller('decks')
 export class DecksController {
   constructor(private readonly deckService: DeckService) {}
 
     @Post()
     @HttpCode(200)
+    @ApiConsumes('multipart/form-data')
     @UseInterceptors(FileInterceptor('deckFile'))
     uploadFileForDeck(@Body() { name }: DeckCreatePayload,@UploadedFile() file: Express.Multer.File) {
         this.deckService.create(name, file);
@@ -18,8 +21,8 @@ export class DecksController {
     }
 
     @Get()
-    getAllDecks() {
-        return this.deckService.getAllDecks();
+    getAllDecks(@Query() params: DeckGetAllPayload) {
+        return this.deckService.getAllDecks(params.name);
     }
     
 }

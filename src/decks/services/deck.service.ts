@@ -26,9 +26,9 @@ export class DeckService {
         }
     }
 
-    async getAllDecks() {
+    async getAllDecks(filter: string = '') {
         const decksFromFileSystem = fs.readdirSync(this.decksPath, { withFileTypes: true });
-        return Bluebird.map(decksFromFileSystem.filter((deck)=> deck.isDirectory), async (deck)=> {
+        return Bluebird.map(decksFromFileSystem.filter((deck)=> deck.isDirectory && deck.name.match(filter)), async (deck)=> {
             const files = await new Bluebird((resolve, reject)=> {
                 fs.readdir(`${this.decksPath}/${deck.name}`, (err, files)=> {
                     if (err) return reject(err);
