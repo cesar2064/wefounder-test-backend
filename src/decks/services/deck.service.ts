@@ -28,7 +28,7 @@ export class DeckService {
 
     async getAllDecks(filter: string = '') {
         const decksFromFileSystem = fs.readdirSync(this.decksPath, { withFileTypes: true });
-        return Bluebird.map(decksFromFileSystem.filter((deck)=> deck.isDirectory && deck.name.match(filter)), async (deck)=> {
+        const results = await Bluebird.map(decksFromFileSystem.filter((deck)=> deck.isDirectory && deck.name.match(filter)), async (deck)=> {
             const files = await new Bluebird((resolve, reject)=> {
                 fs.readdir(`${this.decksPath}/${deck.name}`, (err, files)=> {
                     if (err) return reject(err);
@@ -40,11 +40,19 @@ export class DeckService {
                 files
             }
         })
+        return results.sort((deck1, deck2)=> {
+            if (deck1.name < deck2.name) {
+                return -1;
+            }
+            if (deck1.name > deck2.name) {
+                return 1;
+            }
+            return 0;
+        });
     }
 
     private createImagesFromPdfType(name: string,buffer: Buffer) {
         const dir = `${this.configService.get('DECKS_PATH')}/${name}`;
-        console.log(dir)
         mkdirp.sync(dir);
         return fromBuffer(buffer, {
             density: 100,

@@ -13,10 +13,10 @@ export class DecksController {
     @HttpCode(200)
     @ApiConsumes('multipart/form-data')
     @UseInterceptors(FileInterceptor('deckFile'))
-    uploadFileForDeck(@Body() { name }: DeckCreatePayload,@UploadedFile() file: Express.Multer.File) {
-        this.deckService.create(name, file);
+    async uploadFileForDeck(@Body() { name }: DeckCreatePayload,@UploadedFile() file: Express.Multer.File) {
+        await this.deckService.create(name, file);
         return {
-            message: 'your file is processing'
+            message: 'your file deck is created'
         }
     }
 
