@@ -3,7 +3,7 @@
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
-
+Node JS 16 lts version is required
 ```bash
 $ npm install
 ```
