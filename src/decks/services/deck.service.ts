@@ -5,14 +5,17 @@ import * as mkdirp from 'mkdirp';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as Bluebird from 'bluebird';
+import Converter from 'ppt-png'
 
 @Injectable()
 export class DeckService {
 
     private readonly decksPath = this.configService.get('DECKS_PATH')
+    private readonly tempPath = this.configService.get('TEMP_PATH');
 
     constructor(private readonly configService: ConfigService) {
         mkdirp(this.decksPath);
+        mkdirp(this.tempPath);
     }
 
     async create(name: string, file: Express.Multer.File) {
@@ -20,6 +23,8 @@ export class DeckService {
             switch(file.mimetype) {
                 case DeckFileMimeTypes.Pdf:
                     await this.createImagesFromPdfType(name, file.buffer);
+                case DeckFileMimeTypes.Ppt: case DeckFileMimeTypes.Pptx:
+                    this.createFromPptOrPptx(name, file.path);
             }
         } catch(e) {
             console.error(e);
@@ -52,7 +57,7 @@ export class DeckService {
     }
 
     private createImagesFromPdfType(name: string,buffer: Buffer) {
-        const dir = `${this.configService.get('DECKS_PATH')}/${name}`;
+        const dir = `${this.decksPath}/${name}`;
         mkdirp.sync(dir);
         return fromBuffer(buffer, {
             density: 100,
@@ -61,5 +66,17 @@ export class DeckService {
             width: 600,
             height: 600
         }).bulk(-1, false);
+    }
+
+    private createFromPptOrPptx(name: string, filePath: string) {
+        const dir = `${this.decksPath}/${name}/`;
+        mkdirp.sync(dir);
+        const converter = Converter.create({
+            files:  [filePath],
+            output: dir,
+            deletePdfFile: true,
+            outputType: 'jpg'
+        });
+        converter.convert();
     }
 }

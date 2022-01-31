@@ -2,7 +2,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export enum DeckFileMimeTypes {
-    Pdf = 'application/pdf'
+    Pdf = 'application/pdf',
+    Ppt = 'application/vnd.ms-powerpoint',
+    Pptx = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
 }
 
 export abstract class DeckCreatePayload {
