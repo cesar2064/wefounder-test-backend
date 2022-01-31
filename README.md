@@ -9,7 +9,7 @@ $ npm install
 ```
 
 ## Lib requirements
-In order to allow the appliction to manipulate the images, we need the following libs to be installed:
+In order to allow the application to manipulate the images, we need the following libs to be installed:
 
 Debian/Ubuntu:
 
